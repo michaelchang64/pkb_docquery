@@ -108,7 +108,7 @@ def main(offline_flag, translate_flag, auto_select_specific_doc_flag, show_conte
             cprint(f"Auto-select document: {colored(auto_select_specific_doc_flag, color=FILENAME_COLOR)}", color=SYSTEM_TEXT_FONT_COLOR)
             cprint(f"Show context documents: {colored(show_context_flag, color=FILENAME_COLOR)}", color=SYSTEM_TEXT_FONT_COLOR)
             cprint(f"Target language: {colored(target_language, color=FILENAME_COLOR)}\n", color=SYSTEM_TEXT_FONT_COLOR)
-            cprint(f"LLM Model: {colored(model, color=FILENAME_COLOR)}\n", color=SYSTEM_TEXT_FONT_COLOR)
+            cprint(f"LLM Model: {colored(llm.model_name, color=FILENAME_COLOR)}\n", color=SYSTEM_TEXT_FONT_COLOR)
             continue
 
         specific_doc_filename = None
