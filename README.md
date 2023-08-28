@@ -60,7 +60,9 @@ Command                         | Description
 `settings`                        | Lists all setting values for translate, offline, auto_select, and target_language.
 
 ## TODOs
-* add support for other LLMs
+* assess then add support for other LLMs
+  * models such as Claude, GPT-3.5-turbo, LLaMa 2
+  * assess how well these perform compared to GPT-4
 * add support for Markdown files (LangChain's implementation through Unstructured isn't functioning properly)
 * better text cleaning of PDFs
-* 
+* add other summary generation types (stuff, map_reduce, map_rerank)
