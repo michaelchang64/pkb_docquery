@@ -1,0 +1,11 @@
+# ignore vim backups
+*~
+
+# ignore directories
+document_vector_store_db/
+embedding_cache/
+research_documents/*
+venv/
+
+# gitkeep research_documents/ folder
+!research_documents/.gitkeep
