@@ -2,6 +2,8 @@
 
 PKB DocQuery allows you to harness the power of Large Language Models (LLMs) to answer questions about your documents. DocQuery can be especially useful for pinpointing hard-to-read primary source documents such as legal texts and policy memos.
 
+This tool is **language agnostic**, meaning you can upload documents in a different language (Thai for example). I haven't tested this with languages beyond Thai and Korean, but I've confirmed that this does a pretty good job parsing and accurately summarizing documents in those languages.
+
 ## Disclaimer
 
 This software tool uses large language models to generate summaries. While it strives for accuracy, it may not always capture the full context or nuances of the original document. Therefore, it should be used as a supplementary resource rather than a standalone source of information. This tool is designed to assist users in gaining a better understanding of primary source documents by providing a refined summary. It is not intended to replace reading through the full text. 
@@ -66,3 +68,4 @@ Command                         | Description
 * add support for Markdown files (LangChain's implementation through Unstructured isn't functioning properly)
 * better text cleaning of PDFs
 * add other summary generation types (stuff, map_reduce, map_rerank)
+* research better methods of retrieving context other than cosine similarity
