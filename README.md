@@ -16,6 +16,15 @@ By using this tool, you acknowledge and agree to these terms.
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
+### OpenAI API Key
+
+Ensure that your API key is stored in your `.bashrc` or `.zshrc` file as an environmental variable. If you don't have one already, you can get your API key [here](https://platform.openai.com/account/api-keys).
+
+To set the environment variable, you can enter the following in your `.bashrc`/`.zshrc` file:
+```
+export OPENAI_API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
 ### Installing PKB DocQuery
 
 To install PKB DocQuery, follow these steps:
