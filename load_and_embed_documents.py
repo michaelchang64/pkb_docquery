@@ -1,6 +1,4 @@
 import argparse
-import os
-import glob
 from langchain.document_loaders import (
     DirectoryLoader,
     UnstructuredWordDocumentLoader,
@@ -8,8 +6,8 @@ from langchain.document_loaders import (
     UnstructuredHTMLLoader,
     TextLoader
 )
-from langchain.text_splitter import TokenTextSplitter
 from langchain.text_splitter import NLTKTextSplitter
+# from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings, CacheBackedEmbeddings  
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain.storage import LocalFileStore
@@ -31,8 +29,8 @@ def main(offline_flag):
     txt_docs = txt_loader.load()
     html_docs = html_loader.load()
 
-    # text_splitter = TokenTextSplitter(chunk_size=650, chunk_overlap=0)
     text_splitter = NLTKTextSplitter.from_tiktoken_encoder(chunk_size=650, encoding_name="cl100k_base")
+    # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     # md_docs = text_splitter.split_documents(md_docs)
     pdf_docs = text_splitter.split_documents(pdf_docs)
     doc_docs = text_splitter.split_documents(doc_docs)

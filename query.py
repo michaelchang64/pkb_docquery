@@ -29,10 +29,10 @@ MODEL_OPTIONS = ["gpt-4", "gpt-3.5-turbo", "gpt-3.5-turbo-16k"]
 HELP_TEXT = f"""
 Command                         | Description
 ------------------------------- | ----------------------------------------------
-quit / exit                     | Exits the program with a farewell message.
+quit / exit                     | Exits the program.
 help                            | Displays this help text.
 translate                       | Toggles the translation feature on or off.
-offline                         | Toggles the offline mode on or off.
+offline                         | Toggles the offline embeddings (all-MiniLM-L6-v2 embedding model) mode on or off.
 auto_select                     | Toggles the auto-select document feature on or off.
 show_context                    | Toggles the document context showing feature on or off.
 target_language                 | Allows you to enter a new target language.
@@ -102,6 +102,11 @@ def main(offline_flag, translate_flag, auto_select_specific_doc_flag, show_conte
             os.system('python load_and_embed_documents.py')
             cprint("Documents have been loaded and embedded", color=SYSTEM_TEXT_FONT_COLOR)
             continue
+        # elif query.lower().strip() == "export":
+        #     cprint("Exporting last query and documents", color=SYSTEM_TEXT_FONT_COLOR)
+
+        #     cprint("Documents have been loaded and embedded", color=SYSTEM_TEXT_FONT_COLOR)
+        #     continue
         elif query.lower().strip() == "settings":
             cprint(f"Translate: {colored(translate_flag, color=FILENAME_COLOR)}", color=SYSTEM_TEXT_FONT_COLOR)
             cprint(f"Offline embeddings: {colored(offline_flag, color=FILENAME_COLOR)}", color=SYSTEM_TEXT_FONT_COLOR)
@@ -200,8 +205,8 @@ def get_specific_doc_filename(query, document_filenames, llm):
 
 def run_vector_store_search(query, vector_store, doc_filename=None):
     if doc_filename:
-       return vector_store.similarity_search(query, k=6, filter={"source": doc_filename})
-    return vector_store.similarity_search(query, k=6)
+       return vector_store.max_marginal_relevance_search(query, k=4, filter={"source": doc_filename})
+    return vector_store.similarity_search(query, k=4)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

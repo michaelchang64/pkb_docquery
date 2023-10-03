@@ -71,6 +71,8 @@ Command                         | Description
 `settings`                        | Lists all setting values for translate, offline, auto_select, and target_language.
 
 ## TODOs
+* export query and selected documents as text
+* switch between MMR and similarity search modes when not in auto-select document mode
 * assess then add support for other LLMs
   * models such as Claude, GPT-3.5-turbo, LLaMa 2
   * assess how well these perform compared to GPT-4

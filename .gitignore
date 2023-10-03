@@ -6,6 +6,7 @@ document_vector_store_db/
 embedding_cache/
 research_documents/*
 venv/
+.DS_Store
 
 # gitkeep research_documents/ folder
 !research_documents/.gitkeep
