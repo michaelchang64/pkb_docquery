@@ -1,27 +1,28 @@
 import argparse
-from langchain.document_loaders import (
+from langchain_community.document_loaders import (
     DirectoryLoader,
     UnstructuredWordDocumentLoader,
     UnstructuredPDFLoader,
     UnstructuredHTMLLoader,
     TextLoader
 )
-from langchain.text_splitter import NLTKTextSplitter
+from langchain_text_splitters import NLTKTextSplitter
 # from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings, CacheBackedEmbeddings  
+from langchain_openai import OpenAIEmbeddings
+from langchain.embeddings import CacheBackedEmbeddings  
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain.storage import LocalFileStore
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 
 def main(offline_flag):
     documents_folder = "./research_documents"
 
     # md_loader = DirectoryLoader(documents_folder, glob="**/*.md", use_multithreading=True, loader_cls=UnstructuredMarkdownLoader)
-    pdf_loader = DirectoryLoader(documents_folder, glob="**/*.pdf", use_multithreading=True, loader_cls=UnstructuredPDFLoader)
-    doc_loader = DirectoryLoader(documents_folder, glob="**/*.doc", use_multithreading=True, loader_cls=UnstructuredWordDocumentLoader)
-    docx_loader = DirectoryLoader(documents_folder, glob="**/*.docx", use_multithreading=True, loader_cls=UnstructuredWordDocumentLoader)
-    html_loader = DirectoryLoader(documents_folder, glob="**/*.html", use_multithreading=True, loader_cls=UnstructuredHTMLLoader)
-    txt_loader = DirectoryLoader(documents_folder, glob="**/*.txt", use_multithreading=True, loader_cls=TextLoader)
+    pdf_loader = DirectoryLoader(documents_folder, glob="**/*.pdf", use_multithreading=True, loader_cls=UnstructuredPDFLoader, show_progress=True)
+    doc_loader = DirectoryLoader(documents_folder, glob="**/*.doc", use_multithreading=True, loader_cls=UnstructuredWordDocumentLoader, show_progress=True)
+    docx_loader = DirectoryLoader(documents_folder, glob="**/*.docx", use_multithreading=True, loader_cls=UnstructuredWordDocumentLoader, show_progress=True)
+    html_loader = DirectoryLoader(documents_folder, glob="**/*.html", use_multithreading=True, loader_cls=UnstructuredHTMLLoader, show_progress=True)
+    txt_loader = DirectoryLoader(documents_folder, glob="**/*.txt", use_multithreading=True, loader_cls=TextLoader, show_progress=True)
     # md_docs = md_loader.load()
     pdf_docs = pdf_loader.load()
     doc_docs = doc_loader.load()
@@ -29,7 +30,7 @@ def main(offline_flag):
     txt_docs = txt_loader.load()
     html_docs = html_loader.load()
 
-    text_splitter = NLTKTextSplitter.from_tiktoken_encoder(chunk_size=650, encoding_name="cl100k_base")
+    text_splitter = NLTKTextSplitter.from_tiktoken_encoder(chunk_size=400, encoding_name="cl100k_base")
     # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     # md_docs = text_splitter.split_documents(md_docs)
     pdf_docs = text_splitter.split_documents(pdf_docs)
@@ -43,9 +44,9 @@ def main(offline_flag):
 
     # embeddings shit
     store = LocalFileStore("./embedding_cache")
-    underlying_embedder = OpenAIEmbeddings()
+    underlying_embedder = OpenAIEmbeddings(model="text-embedding-3-large")
     if offline_flag:
-        underlying_embedder = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+        underlying_embedder = SentenceTransformerEmbeddings(model_name="intfloat/multilingual-e5-large-instruct")
     cached_embedder = CacheBackedEmbeddings.from_bytes_store(underlying_embedder, store)
 
     persist_path = "./document_vector_store_db"

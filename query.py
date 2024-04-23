@@ -4,18 +4,20 @@ import os
 import json
 from simple_term_menu import TerminalMenu
 from termcolor import colored, cprint
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
+from langchain_community.chat_models import ChatOllama
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
-from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks import get_openai_callback
 from langchain.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     SystemMessagePromptTemplate,
 )
-from langchain.embeddings import OpenAIEmbeddings, CacheBackedEmbeddings  
+from langchain_openai import OpenAIEmbeddings
+from langchain.embeddings.cache import CacheBackedEmbeddings
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain.storage import LocalFileStore
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 
 SYSTEM_TEXT_FONT_COLOR = 'blue'
 SYSTEM_TEXT_BG_COLOR = 'on_blue'
@@ -24,7 +26,10 @@ FILENAME_COLOR = 'magenta'
 ERROR_COLOR = 'red'
 DIAGNOSTIC_COLOR = 'cyan'
 ANSWER_COLOR = 'green'
-MODEL_OPTIONS = ["gpt-4", "gpt-3.5-turbo", "gpt-3.5-turbo-16k"]
+MODEL_OPTIONS = ["gpt-4-turbo", "gpt-3.5-turbo", "llama3"]
+NON_OPENAI_INDEX = 2
+OPENAI_MODELS = set(MODEL_OPTIONS[0:NON_OPENAI_INDEX])
+# OFFLINE_MODELS = set(MODEL_OPTIONS[NON_OPENAI_INDEX:])
 
 HELP_TEXT = f"""
 Command                         | Description
@@ -51,12 +56,15 @@ def main(offline_flag, translate_flag, auto_select_specific_doc_flag, show_conte
     store = LocalFileStore("./embedding_cache")
     underlying_embedder = OpenAIEmbeddings()
     if offline_flag:
-        underlying_embedder = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+        underlying_embedder = SentenceTransformerEmbeddings(model_name="intfloat/multilingual-e5-large-instruct")
     cached_embedder = CacheBackedEmbeddings.from_bytes_store(underlying_embedder, store)
 
     vector_store = Chroma(persist_directory=vector_store_path, embedding_function=cached_embedder)
 
-    llm = ChatOpenAI(model_name=model, temperature=0)
+    if model not in OPENAI_MODELS:
+        llm = ChatOllama(model='llama3')
+    else:
+        llm = ChatOpenAI(model=model, temperature=0)
 
     while True:
         query = input(colored("Enter your query (enter `help` for list of commands): ", color=SYSTEM_TEXT_FONT_COLOR))
@@ -94,12 +102,18 @@ def main(offline_flag, translate_flag, auto_select_specific_doc_flag, show_conte
             terminal_menu = TerminalMenu(MODEL_OPTIONS)
             menu_entry_index = terminal_menu.show()
             model = MODEL_OPTIONS[menu_entry_index]
-            llm = ChatOpenAI(model_name=model, temperature=0)
+            if model not in OPENAI_MODELS:
+                llm = ChatOllama(model='llama3')
+            else:
+                llm = ChatOpenAI(model=model, temperature=0)
             cprint(f"You have selected {colored(model, color=FILENAME_COLOR)}", color=SYSTEM_TEXT_FONT_COLOR)
             continue
         elif query.lower().strip() == "update":
             cprint("Running load and embed documents", color=SYSTEM_TEXT_FONT_COLOR)
-            os.system('python load_and_embed_documents.py')
+            if offline_flag:
+                os.system('python load_and_embed_documents.py --offline')
+            else:
+                os.system('python load_and_embed_documents.py')
             cprint("Documents have been loaded and embedded", color=SYSTEM_TEXT_FONT_COLOR)
             continue
         # elif query.lower().strip() == "export":
@@ -219,7 +233,7 @@ if __name__ == "__main__":
     parser.add_argument('--no-show-context', dest='show_context_flag', action='store_false')
     parser.set_defaults(show_context_flag=True)
     parser.add_argument('--target-language', dest='target_language', default='Korean')
-    parser.add_argument('--llm-model', dest='model', default='gpt-4')
+    parser.add_argument('--llm-model', dest='model', default=MODEL_OPTIONS[0])
     args = parser.parse_args()
 
     main(args.offline_flag, args.translate_flag, args.auto_select_specific_doc_flag, args.show_context_flag, args.target_language, args.model)

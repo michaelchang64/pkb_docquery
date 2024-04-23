@@ -38,6 +38,11 @@ cd pkb_docquery
 ```
 pip install -r requirements.txt
 ```
+4. Install [ollama](https://ollama.com/download).
+5. Install `llama3` for offline use:
+```
+ollama run llama3
+```
 
 ### Usage
 
@@ -51,7 +56,7 @@ To use PKB DocQuery, follow these steps:
 # Regular load and embed with OpenAI embeddings
 python load_and_embed_documents.py
 
-# Run with `all-MiniLM-L6-v2` embedding model.
+# Run with `intfloat/multilingual-e5-large-instruct` embedding model.
 python load_and_embed_documents.py --offline
 ```
 3. Run the `query.py` script to start the query interface. This script allows you to enter queries and get answers from the LLM. It also supports translation, offline embeddings, and auto-selection of documents based on the query.
@@ -73,10 +78,6 @@ Command                         | Description
 ## TODOs
 * export query and selected documents as text
 * switch between MMR and similarity search modes when not in auto-select document mode
-* assess then add support for other LLMs
-  * models such as Claude, GPT-3.5-turbo, LLaMa 2
-  * assess how well these perform compared to GPT-4
-* add support for Markdown files (LangChain's implementation through Unstructured isn't functioning properly)
 * better text cleaning of PDFs
 * add other summary generation types (stuff, map_reduce, map_rerank)
 * research better methods of retrieving context other than cosine similarity
